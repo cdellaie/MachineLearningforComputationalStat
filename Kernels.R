@@ -110,6 +110,14 @@ cvpred.ksvm <- function(x,y,folds=3,predtype="response",...)
  	invisible(ypred)
  }
 
+cv.auc=function(x,y,Cte,...)
+{
+  cv=cvpred.ksvm(x,y,folds=5,predtype="response",C=Cte,...)
+  cv.pred=prediction(cv,y)
+  cv.perf=performance(cv.pred,measure="auc")
+  return(cv.perf@y.values[[1]])
+}
+
 #######################
 #######################
 #######################
@@ -143,6 +151,23 @@ plot(perf)
 svp <- ksvm(x,y,type="C-svc",kernel='vanilladot',C=1,scaled=c(),cross=5)
 print(cross(svp))
 print(1-sum((ypredscorecv>0)==(y==1))/n)
+
+#############################################################################
+###Cross validation pour C allant de 2^-10 à 2^10
+#############################################################################
+
+xtrain3=datat[1:184,]
+ytrain3=ytrain[1:184,]
+
+cv.poly=data.frame(C=2^seq(-10,10))
+cv.auc(xtrain3,ytrain3,C=1,type="C-svc",kernel=polydot(degree=2),scaled=c())
+cv.poly$res=sapply(cv.poly$C,function(C) cv.auc(xtrain3,ytrain3,C,type="C-svc",kernel=polydot(degree=2),scaled=c()))
+par(xlog=T)
+plot(cv.poly$C,cv.poly$res,type="l",log="x")
+
+##Meilleur C trouvé
+Cmax=cv.poly$C[which.max(cv.poly$res)]
+
 
 
 

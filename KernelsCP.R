@@ -17,9 +17,9 @@ colnames(xtrain)=nomGen
 
 ytrain = as.matrix(read.table("ytrain.txt"))
 
-xtest = read.table("xtest.txt")
-nomGen=xtest[,1]
-xtest=t(as.matrix(xtest[,-1]))
+test = read.table("xtest.txt")
+nomGen=test[,1]
+xtest=t(as.matrix(test[,-1]))
 rownames(xtest)=NULL
 colnames(xtest)=nomGen
 
@@ -45,9 +45,9 @@ cvpred.ksvm <- function(x,y,folds=3,predtype="response",...)
   invisible(ypred)
 }
 
-cv.auc=function(x,y,C,...)
+cv.auc=function(x,y,Cte,...)
 {
-  cv=cvpred.ksvm(x,y,folds=5,predtype="response",C=C,...)
+  cv=cvpred.ksvm(x,y,folds=5,predtype="response",C=Cte,...)
   cv.pred=prediction(cv,y)
   cv.perf=performance(cv.pred,measure="auc")
   return(cv.perf@y.values[[1]])
@@ -55,6 +55,11 @@ cv.auc=function(x,y,C,...)
 
 ###Cross validation pour C allant de 2^-10 à 2^10
 cv.poly=data.frame(C=2^seq(-10,10))
+
+cv.auc(datat,ytrain,C=1,type="C-svc",kernel=polydot(degree=2),scaled=c())
+ksvm(datat,ytrain,type="C-svc",kernel=polydot(degree=2),scale=1)
+
+
 cv.poly$res=sapply(cv.poly$C,function(C) cv.auc(xtrain,ytrain,C,type="C-svc",kernel=polydot(degree=2),scaled=c()))
 par(xlog=T)
 plot(cv.poly$C,cv.poly$res,type="l",log="x")
@@ -64,6 +69,7 @@ Cmax=cv.poly$C[which.max(cv.poly$res)]
 
 
 
+#à virer  xtrain[,1]
 
 
 
