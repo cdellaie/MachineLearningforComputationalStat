@@ -2,7 +2,9 @@ library(kernlab)
 library(ROCR)
 library(igraph)
 
-#téléchargement des données
+##########################################
+#téléchargement et traitement des données#
+##########################################
 
 xtrain = read.table("C:/Users/Clément/Desktop/ENSAE 3A/MLCB/xtrain.txt")
 ytrain = read.table("C:/Users/Clément/Desktop/ENSAE 3A/MLCB/ytrain.txt")
@@ -24,9 +26,9 @@ xtest=datat[151:184,]
 ytest=ytrain[151:184,]
 
 ##################################################################################################################
-#essai sur les set d'entraînements avec plusieurs noyaux
-#le meilleur sera choisi pour être entrainé sur la base complète et prévoir sur les données à traiter
-#tanhdot,laplacedot,besseldot,anovadot
+#essai sur les set d'entraînements avec plusieurs noyaux                                                        ##
+#le meilleur sera choisi pour être entrainé sur la base complète et prévoir sur les données à traiter           ## 
+#tanhdot,laplacedot,besseldot,anovadot                                                                          ##
 ##################################################################################################################
 
 LinearKernel <- ksvm(xtrain2,ytrain2,type="C-svc",kernel="vanilladot")
@@ -84,12 +86,18 @@ predict(BestKernel,FinalTest)
 ##################################################################################################################
 ##################################################################################################################
 
+#Plutôt que de tester les paramètres sur un échantillon produit à la main, on se sert de la cross-validation
+
 #############################
 ## Fonctions préliminaires ##
 #############################
 
+################################################################################################# 
+##   Le code des fonctions préliminaires est disponible sur la page personnelle de J-P Vert    ##
+##   http://cbio.ensmp.fr/~jvert                                                               ##                  
+################################################################################################# 
 cv.folds <- function(n,nfolds=3)
-## Randomly split the n samples into folds
+## Randomly split the n samples into folds 
 ## Returns a list of nfolds lists of indices, each corresponding to a fold
 {
  	return(split(sample(n),rep(1:nfolds,length=n)))
@@ -109,6 +117,8 @@ cvpred.ksvm <- function(x,y,folds=3,predtype="response",...)
  		}
  	invisible(ypred)
  }
+
+#auc retourne un score de performance de l'algortihme
 
 cv.auc=function(x,y,Cte,...)
 {
@@ -134,7 +144,7 @@ pred <- prediction(ypredscore,ytest)
 perf <- performance(pred, measure = "prec", x.measure = "rec") 
 plot(perf)
 
-# We compute the prediction vector by cross-validation
+# Exemple de prediction avec cross-validation
 
 k=5	
 ypredscorecv <- cvpred.ksvm(x,y,folds=k,type="C-svc",kernel=polydot(degree=2),C=1,scaled=c(),predtype="decision")
@@ -153,20 +163,55 @@ print(cross(svp))
 print(1-sum((ypredscorecv>0)==(y==1))/n)
 
 #############################################################################
-###Cross validation pour C allant de 2^-10 à 2^10
+###Cross validation pour C allant de 2^-10 à 2^10                          ##
 #############################################################################
 
 xtrain3=datat[1:184,]
 ytrain3=ytrain[1:184,]
 
+###Polynôme de degré 2
 cv.poly=data.frame(C=2^seq(-10,10))
 cv.auc(xtrain3,ytrain3,C=1,type="C-svc",kernel=polydot(degree=2),scaled=c())
 cv.poly$res=sapply(cv.poly$C,function(C) cv.auc(xtrain3,ytrain3,C,type="C-svc",kernel=polydot(degree=2),scaled=c()))
 par(xlog=T)
 plot(cv.poly$C,cv.poly$res,type="l",log="x")
 
+##Meilleur C trouvé = 0.125
+Cmax=cv.poly$C[which.max(cv.poly$res)]
+BestPolyKernel = ksvm(datat,ytrain,type="C-svc",C=Cmax,kernel=polydot(degree=2),scale=c())
+PolyPred=predict(BestPolyKernel,FinalTest)
+
+##########
+##########
+
+###Anova
+cv.auc(xtrain3,ytrain3,C=1,type="C-svc",kernel="anovadot",sigma=1,degre=1,scaled=c())
+cv.poly$res=sapply(cv.poly$C,function(C) cv.auc(xtrain3,ytrain3,C,type="C-svc",kernel="anovadot",scaled=c()))
+par(xlog=T)
+plot(cv.poly$C,cv.poly$res,type="l",log="x")
+
 ##Meilleur C trouvé
 Cmax=cv.poly$C[which.max(cv.poly$res)]
+BestAnovaKernel = ksvm(datat,ytrain,type="C-svc",C=Cmax,kernel="anovadot",scale=c())
+predict(BestAnovaKernel,FinalTest)
+
+##########
+##########
+
+###Noyau gaussien
+cv.auc(xtrain3,ytrain3,C=1,type="C-svc",kernel="rbfdot",kpar=list(sigma=1),scale=FALSE)
+cv.poly$res=sapply(cv.poly$C,function(C) cv.auc(xtrain3,ytrain3,C,type="C-svc",kernel="rbfdot",kpar=list(sigma=1),scale=FALSE))
+par(xlog=T)
+plot(cv.poly$C,cv.poly$res,type="l",log="x")
+
+##Meilleur C trouvé = 0.0009765625
+Cmax=cv.poly$C[which.max(cv.poly$res)]
+BestGaussianKernel = ksvm(datat,ytrain,type="C-svc",C=Cmax,kernel="rbfdot",kpar=list(sigma=1),scale=FALSE)
+
+GaussianPred=predict(BestGaussianKernel,FinalTest)
+
+
+
 
 
 
