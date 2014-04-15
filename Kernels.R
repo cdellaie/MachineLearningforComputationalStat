@@ -210,6 +210,26 @@ BestGaussianKernel = ksvm(datat,ytrain,type="C-svc",C=Cmax,kernel="rbfdot",kpar=
 
 GaussianPred=predict(BestGaussianKernel,FinalTest)
 
+## Estimation du meilleur margin C par moyennage (N simulations)
+###Polynôme de degré 2
+N=100
+CC=0
+cv.poly=data.frame(C=2^seq(-10,10))
+
+for (i in 1:N){
+cv.poly$res=sapply(cv.poly$C,function(C) cv.auc(xtrain3,ytrain3,C,type="C-svc",kernel=polydot(degree=2),scaled=c()))
+Cmax=cv.poly$C[which.max(cv.poly$res)]
+print(Cmax)
+CC=CC+Cmax
+print(i)
+}
+CC=CC/N
+
+##Meilleur C moyen trouvé =  87.45796
+
+BestPolyKernel2 = ksvm(datat,ytrain,type="C-svc",C=87.45796,kernel=polydot(degree=2),scale=c())
+PolyPred2=predict(BestPolyKernel,FinalTest)
+
 
 
 

@@ -76,29 +76,43 @@ Anova & \\
 \label{fig:AUC Poly}
 \end{figure}
 
-L'échantillonage en $5$ sous-classes étant aléatoire, la marge$C$ obtenue varie à chaque itération. Afin d'obtenir un résultat plus robuste, nous avons itéré la cross-validation $100$ fois, puis fais la moyenne des marges optimales obtenues.\\
+L'échantillonage en $5$ sous-classes étant aléatoire, la marge$C$ obtenue varie à chaque itération. Afin d'obtenir un résultat plus robuste, nous avons itéré la cross-validation $100$ fois, puis fais la moyenne des marges optimales obtenues. Sur $20$ itérations de cross-validation, nous avons obtenu une marge optimale moyenne de :
+\[CC=87.45796\]
 
+Voici le vecteur prédit à partir des $92$ individus du dossier \textit{xtest.txt}:\\
+
+\fbox{\begin{minipage}{0.9\textwidth}
+\begin{enumerate}
+\item $[1]$ -1 -1 -1 -1  1  1 -1 -1 -1  1 -1 -1  1 -1 -1 -1 -1 -1 -1  1 -1 -1  1  1  1
+\item $[26]$ -1 -1  1 -1  1 -1 -1 -1 -1 -1  1 -1 -1 -1 -1 -1 -1 -1 -1  1 -1 -1 -1 -1 -1
+\item $[51]$ -1 -1  1 -1 -1  1 -1 -1  1  1  1 -1 -1  1 -1 -1 -1  1 -1 -1  1 -1 -1  1  1
+\item $[76]$ -1 -1 -1 -1 -1  1 -1  1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+\end{enumerate}
+\end{minipage}}
+\\
+\\
 \subsection{Commentaires sur le code}
 Nous avons principalement utilisé le package \textit{kernlab}.
 Le code du projet est entièrement disponible à la page :\\
 
 \url{https://github.com/cdellaie/MachineLearningforComputationalStat}
 
-\subsection{Une mesure théorique de la connexité d'un graphe}
-% a voir si cela peut servir , on peut le virer si ça sert vraiment à rien, je me suis dis que cela pouvait aider à choisir le nombre k des sous k graphe à choisir pour faire le group lasso
-
-Voici la définition de la constante d'isopérimétrie d'un graphe. Provenant de la théorie des graphes expanseurs, elle mesure en quelque sorte, lorsque le graphe est fini, si le graphe est "très connexe", où l'on dit qu'un graphe est très connexe si, après lui avoir enlevé beaucoup d'arêtes, il le reste.\\
-
-Si $X$ désigne un graphe fini, si $A\subset X$ est un sous-graphe de $X$, on définit la frontière de $A$ comme :
-\[\partial A := \left\{(x,y)\ \text{arêtes t.q.} x\in A,y \notin A\right\}\]
-Alors la constante d'isopérimétrie associée à $X$ est :
-\[h(X)=\inf\left\{ \frac{|\partial A|}{|A|} : A \subset X \ \text{t.q.}\ 1\leq |A|\leq \frac{|X|}{2}\right\}\]
-où $|.|$ dénote le cardinal d'un ensemble.
-
+%\subsection{Une mesure théorique de la connexité d'un graphe}
 %linear subgraph
-Un sous-graphe linéaire est constitué d'une suite de sommets qui forment un chemin, \textit{i.e.} une suite d'arêtes $v_j$ telles que $(v_j,v_{j+1})\in E$, où $E$ est l'ensemble des arêtes du graphe. 
+%Un sous-graphe linéaire est constitué d'une suite de sommets qui forment un chemin, \textit{i.e.} une suite d'arêtes $v_j$ telles que $(v_j,v_{j+1})\in E$, où $E$ est l'ensemble des arêtes du graphe. 
 
 %minimal connected component expected in the support of the model
+% a voir si cela peut servir , on peut le virer si ça sert vraiment à rien, je me suis dis que cela pouvait aider à choisir le nombre k des sous k graphe à choisir pour faire le group lasso
+
+%Voici la définition de la constante d'isopérimétrie d'un graphe. Provenant de la théorie des graphes expanseurs, elle mesure en quelque sorte, lorsque le graphe est fini, si le graphe est "très connexe", où l'on dit qu'un graphe est très connexe si, après lui avoir enlevé beaucoup d'arêtes, il le reste.\\
+
+%Si $X$ désigne un graphe fini, si $A\subset X$ est un sous-graphe de $X$, on définit la frontière de $A$ comme :
+%\[\partial A := \left\{(x,y)\ \text{arêtes t.q.} x\in A,y \notin A\right\}\]
+%Alors la constante d'isopérimétrie associée à $X$ est :
+%\[h(X)=\inf\left\{ \frac{|\partial A|}{|A|} : A \subset X \ \text{t.q.}\ 1\leq |A|\leq \frac{|X|}{2}\right\}\]
+%où $|.|$ dénote le cardinal d'un ensemble.
+
+
 
 \bibliographystyle{plain}
 \bibliography{biblio} 
