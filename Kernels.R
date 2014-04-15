@@ -1,5 +1,6 @@
 library(kernlab)
 library(ROCR)
+library(igraph)
 
 #téléchargement des données
 
